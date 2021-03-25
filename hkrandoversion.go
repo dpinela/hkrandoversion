@@ -2,14 +2,14 @@ package main
 
 import (
 	"bufio"
-	"errors"
-	"encoding/binary"
 	"crypto/sha1"
-	"os"
+	"encoding/binary"
+	"errors"
+	"fmt"
 	"io"
+	"os"
 	"regexp"
 	"strings"
-	"fmt"
 )
 
 type latin1Reader struct {
@@ -53,7 +53,7 @@ func baseVersion(f io.ReadSeeker) (string, error) {
 	if loc == nil {
 		return unknown, errors.New("error determining base version: base version not found")
 	}
-	
+
 	if _, err := f.Seek(int64(loc[0]), io.SeekStart); err != nil {
 		return unknown, wrap(err)
 	}
@@ -76,7 +76,7 @@ func hashVersion(f io.Reader) (int, error) {
 	sha := h.Sum(make([]byte, 0, sha1.Size))
 	ver := int32(0)
 	for i := 0; i < len(sha)-1; i += 4 {
-		ver = 17 * ver + 31 * int32(binary.LittleEndian.Uint32(sha[i:i+4]))
+		ver = 17*ver + 31*int32(binary.LittleEndian.Uint32(sha[i:i+4]))
 	}
 	ver %= 997
 	if ver < 0 {
