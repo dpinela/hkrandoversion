@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"encoding/binary"
 	"crypto/sha1"
 	"os"
@@ -46,8 +47,12 @@ func baseVersion(f io.ReadSeeker) (string, error) {
 	}
 	const unknown = "?.??"
 
-	re := regexp.MustCompile(`\d\x00.\x00\d\x00\d(\x00[A-Z])+`)
+	re := regexp.MustCompile(`\d\x00\.\x00\d\x00\d(\x00[A-Z])*`)
 	loc := re.FindReaderIndex(latin1Reader{bufio.NewReader(f)})
+
+	if loc == nil {
+		return unknown, errors.New("error determining base version: base version not found")
+	}
 	
 	if _, err := f.Seek(int64(loc[0]), io.SeekStart); err != nil {
 		return unknown, wrap(err)
