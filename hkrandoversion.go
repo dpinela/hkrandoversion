@@ -47,7 +47,7 @@ func baseVersion(f io.ReadSeeker) (string, error) {
 	}
 	const unknown = "?.??"
 
-	re := regexp.MustCompile(`\d\x00\.\x00\d\x00\d(\x00[A-Z])*`)
+	re := regexp.MustCompile(`\d\x00\.\x00\d\x00\d(\x00[A-Za-z])*`)
 	loc := re.FindReaderIndex(latin1Reader{bufio.NewReader(f)})
 
 	if loc == nil {
